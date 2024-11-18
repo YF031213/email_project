@@ -1,8 +1,7 @@
-# server/smtp_server.py
+0# server/smtp_server.py
 import asyncore
-import smtpd
 import logging
-from email_manager import EmailManager
+import smtpd
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +17,10 @@ class SMTPServer(smtpd.SMTPServer):
         super().__init__(('127.0.0.1', self.port), None)
         print(f"SMTP server started at 127.0.0.1:{self.port}")
 
-    def process_message(self, peer, mailfrom, rcpttos, data):
+    def process_message(self, peer, mailfrom, rcpttos, data, **kwargs):
+        # 处理邮件的逻辑
+        print(f"Received message from {mailfrom} to {rcpttos}")
+        print(f"Message data: {data}")
         """处理收到的邮件"""
         logger.info(f"Received email from {mailfrom} to {rcpttos}")
         self.email_manager.store_email(mailfrom, rcpttos, data)

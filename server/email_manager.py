@@ -11,10 +11,13 @@ class EmailManager:
 
     def store_email(self, from_addr, to_addr, message):
         """存储邮件"""
+        # 将 bytes 转换为 str
+        message_str = message.decode('utf-8')
+
         email_data = {
             'from': from_addr,
             'to': to_addr,
-            'message': message
+            'message': message_str
         }
         try:
             with open(self.email_db, 'a') as f:

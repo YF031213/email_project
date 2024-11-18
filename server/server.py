@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class MailServer:
     def __init__(self):
         # 加载配置
-        with open("server/config/server_config.json", "r") as f:
+        with open("C:\\Users\\Dragonite\\PycharmProjects\\email_project\\server\config\server_config.json", "r") as f:
             self.config = json.load(f)
         logger.info("配置文件加载成功。")    
         
@@ -67,7 +67,8 @@ class MailServer:
 
     def add_test_users(self):
         """添加测试用户"""
-        self.add_user('test_user', 'test_user@example.com', 'test_password')
+        self.add_user('sender', 'sender@example.com', 'test_password')
+        self.add_user('receiver', 'receiver@example.com', 'test_password')
 
     
 

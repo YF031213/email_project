@@ -101,6 +101,7 @@ class UserManager:
 
     def add_test_users(self):
         """添加测试用户"""
-        self.create_user('test_user', 'test_user@example.com', 'test_password')
+        self.create_user('sender', 'sender@example.com', 'test_password')
+        self.create_user('receiver', 'receiver@example.com', 'test_password')
 
     # 可根据需要添加其他方法，例如更新用户信息等
