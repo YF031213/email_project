@@ -53,6 +53,13 @@ class UserManager:
         conn.close()
         logger.info("用户数据加载成功。")
 
+    def user_exists(self, username):
+        """检查用户是否存在"""
+        for user in self.users:
+            if user['username'] == username:
+                return True
+        return False
+    
     def save_users(self):
         """保存用户数据（对于 SQLite，不需要实现此方法）"""
         pass  # 数据库操作在每次增删改时已经提交
