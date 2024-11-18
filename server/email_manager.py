@@ -1,5 +1,6 @@
 # server/email_manager.py
 import json
+import base64
 import logging
 
 logger = logging.getLogger(__name__)
@@ -9,12 +10,14 @@ class EmailManager:
         self.config = config
         self.email_db = self.config['server']['email_data_file']
 
-    def store_email(self, from_addr, to_addr, message):
-        """存储邮件"""
+    def store_email(self, from_addr, to_addr, title, message):
+        """存储邮件，使用base64编码raw字段"""
+        message_base64 = base64.b64encode(message).decode('utf-8')
         email_data = {
-            'from': from_addr,
+            'sender': from_addr,
             'to': to_addr,
-            'message': message
+            'title': title,
+            'raw': message_base64
         }
         try:
             with open(self.email_db, 'a') as f:
@@ -25,10 +28,17 @@ class EmailManager:
             logger.error(f"Error storing email: {e}")
 
     def get_emails(self, username):
-        """获取用户的邮件"""
-        # 模拟获取邮件的逻辑
-        return []
-
-    def delete_email(self, email_id):
-        """删除邮件"""
-        logger.info(f"Deleting email {email_id}.")
+        """获取用户的所有邮件"""
+        emails = []
+        try:
+            with open(self.email_db, 'r') as f:
+                for line in f:
+                    email = json.loads(line.strip())
+                    if email.get("to") == username:
+                        email["raw"] = base64.b64decode(email["raw"].encode('utf-8'))
+                        emails.append(email)
+        except FileNotFoundError:
+            logger.error("Email database file not found.")
+        except Exception as e:
+            logger.error(f"Error retrieving emails: {e}")
+        return emails

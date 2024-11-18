@@ -1,4 +1,3 @@
-# server/server.py
 import json
 import os
 import logging
@@ -7,22 +6,24 @@ from pop3_server import POP3ServerWrapper
 from user_manager import UserManager
 from email_manager import EmailManager
 import asyncore
+import threading
 
 # 设置日志记录
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
 
 class MailServer:
     def __init__(self):
         # 加载配置
         with open("server/config/server_config.json", "r") as f:
             self.config = json.load(f)
-        logger.info("配置文件加载成功。")    
-        
+        logger.info("配置文件加载成功。")
+
         # 初始化用户管理和邮件管理
         self.user_manager = UserManager(self.config)
         self.email_manager = EmailManager(self.config)
-        
+
         # 读取服务器参数
         self.smtp_port = self.config['server']['smtp_port']
         self.pop3_port = self.config['server']['pop3_port']
@@ -35,11 +36,11 @@ class MailServer:
         # 初始化POP3服务器
         self.pop3_server = POP3ServerWrapper(self.config, self.user_manager, self.email_manager)
         logger.info(f"POP3服务器已在 {self.server_domain}:{self.pop3_port} 初始化。")
-        
+
         # 确保日志目录存在
         if not os.path.exists('logs'):
             os.makedirs('logs')
-    
+
     def load_user_data(self):
         """加载用户数据"""
         logger.info("正在加载用户数据...")
@@ -53,23 +54,39 @@ class MailServer:
         """启动邮件服务器"""
         logger.info("邮件服务器正在启动...")
         self.load_user_data()
+
+        # 启动SMTP服务器线程
+        smtp_thread = threading.Thread(target=self.run_smtp)
+        smtp_thread.daemon = True
+        smtp_thread.start()
+
+        # 启动POP3服务器线程
+        pop3_thread = threading.Thread(target=self.run_pop3)
+        pop3_thread.daemon = True
+        pop3_thread.start()
+
         try:
-            asyncore.loop()  # 运行SMTP服务器的事件循环
+            # 主线程等待
+            while True:
+                pass
         except KeyboardInterrupt:
             logger.info("邮件服务器已被用户停止。")
             self.shutdown()
+
+    def run_smtp(self):
+        """运行SMTP服务器"""
+        logger.info("SMTP服务器正在运行...")
+        asyncore.loop()
+
+    def run_pop3(self):
+        """运行POP3服务器"""
+        logger.info("POP3服务器正在运行...")
 
     def shutdown(self):
         """关闭邮件服务器"""
         logger.info("正在关闭邮件服务器...")
         self.smtp_server.close()
         self.pop3_server.shutdown()
-
-    def add_test_users(self):
-        """添加测试用户"""
-        self.add_user('test_user', 'test_user@example.com', 'test_password')
-
-    
 
 
 if __name__ == "__main__":
