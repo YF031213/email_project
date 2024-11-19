@@ -1,0 +1,41 @@
+{
+    "server": {
+      "smtp_port": 2525,
+      "pop3_port": 1110,
+      "domain": "test.com",
+      "max_mail_size": 10485760,  
+      "max_user_count": 1000,     
+      "admin_user": "admin@test.com",  
+      "server_name": "Test Mail Server",
+      "user_data_file": "db/users.db",
+      "email_data_file": "db/emails.db",
+      "server_domain": "127.0.0.1"
+    },
+    "logs": {
+      "log_level": "INFO",  
+      "smtp_log_path": "db/logs/smtp_logs.log",
+      "pop3_log_path": "db/logs/pop3_logs.log",
+      "system_log_path": "db/logs/system_logs.log",
+      "log_rotation": {
+        "max_size": 10485760,  
+        "backup_count": 5     
+      }
+    },
+    "security": {
+      "password_min_length": 6,
+      "password_max_length": 12,
+      "password_requirements": {
+        "lowercase": true,
+        "uppercase": true,
+        "numbers": true,
+        "special_characters": true
+      }
+    },
+    "db": {
+    "host": "localhost",
+    "user": "email_user",
+    "password": "wyf20031213",
+    "database": "email_system"
+  }
+  }
+  
